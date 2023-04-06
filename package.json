@@ -2,11 +2,11 @@
   "name": "my-cloudflare-project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/worker.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "wrangler dev",
     "build": "tsc",
+    "precompile": "tsc --build --clean",
     "deploy": "wrangler publish"
   },
   "keywords": [],
@@ -14,7 +14,6 @@
   "license": "ISC",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230404.0",
-    "@types/randomstring": "^1.1.8",
     "typescript": "^5.0.3",
     "wrangler": "^2.14.0"
   }

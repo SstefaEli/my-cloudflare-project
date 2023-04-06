@@ -1,20 +1,15 @@
-import { handleShortenRequest, handleShortUrlRequest, handleNotFoundRequest } from './handlers/worker'
+import {handleNotFoundRequest, handleShortenRequest, handleShortUrlRequest} from "./handlers";
 
-addEventListener('fetch', (event: FetchEvent) => {
-    event.respondWith(handleRequest(event.request))
-})
+addEventListener('fetch', (event) => {
+    const {request} = event
 
-async function handleRequest(request: Request): Promise<Response> {
-    const { pathname } = new URL(request.url)
+    const url = new URL(request.url)
 
-    switch (pathname) {
-        case '/shorten':
-            return handleShortenRequest(request)
-        default:
-            if (pathname.length === 7) {
-                return handleShortUrlRequest(request)
-            } else {
-                return handleNotFoundRequest()
-            }
+    if (url.pathname === '/shorten') {
+        event.respondWith(handleShortenRequest(request))
+    } else if (url.pathname.startsWith('/')) {
+        event.respondWith(handleShortUrlRequest(request))
+    } else {
+        event.respondWith(handleNotFoundRequest())
     }
-}
+})
