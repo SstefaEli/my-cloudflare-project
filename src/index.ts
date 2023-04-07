@@ -1,14 +1,12 @@
-import {handleNotFoundRequest, handleShortenRequest, handleShortUrlRequest} from "./handlers";
+import {handleGetRequest, handleNotFoundRequest, handlePostRequest,} from "./handlers";
 
 addEventListener('fetch', (event) => {
     const {request} = event
 
-    const url = new URL(request.url)
-
-    if (url.pathname === '/shorten') {
-        event.respondWith(handleShortenRequest(request))
-    } else if (url.pathname.startsWith('/')) {
-        event.respondWith(handleShortUrlRequest(request))
+    if (request.method === 'POST' && request.url.endsWith("/users")) {
+        event.respondWith(handlePostRequest(request))
+    } else if (request.method === "GET" && request.url.includes("/user/")) {
+        event.respondWith(handleGetRequest(request))
     } else {
         event.respondWith(handleNotFoundRequest())
     }

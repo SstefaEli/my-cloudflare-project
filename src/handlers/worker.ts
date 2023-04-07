@@ -1,33 +1,36 @@
 import { KVNamespace } from '@cloudflare/workers-types'
-import {generateShortCode} from "../utils";
+import { Request } from '@cloudflare/workers-types';
+
 
 declare global {
     const MY_NAMESPACE : KVNamespace
 }
 
 
-export async function handleShortenRequest(request: Request): Promise<Response> {
-    const { url } = await request.json() as { url: string }
-
-    const shortCode = generateShortCode()
-
-    // Store the short code and long URL in Cloudflare KV
-    await MY_NAMESPACE.put(shortCode, url)
-
-    const shortUrl = `https://my-shortener.com/${shortCode}`
-    return new Response(shortUrl, { status: 200 })
+export async function handlePostRequest(request: Request): Promise<Response> {
+    try {
+        const { name, email } = await request.json() as { name: string; email: string };
+        await MY_NAMESPACE.put(name, email);
+        return new Response(`User data for "${name}" stored successfully!`);
+    } catch (e) {
+        console.error(`Error storing user data: ${e}`);
+        return new Response("Error storing user data", { status: 500 });
+    }
 }
 
-export async function handleShortUrlRequest(request: Request): Promise<Response> {
-    const urlCode = request.url.slice(1)
-
-    // Look up the long URL in Cloudflare KV using the short code
-    const longUrl = await MY_NAMESPACE.get(urlCode)
-
-    if (longUrl) {
-        return Response.redirect(longUrl, 301)
-    } else {
-        return new Response('404 not found', { status: 404 })
+export async function handleGetRequest(request: Request): Promise<Response> {
+    try {
+        const url = new URL(request.url);
+        const name = url.pathname.split("/")[2];
+        const email = await MY_NAMESPACE.get(name);
+        if (email) {
+            return new Response(`Name: ${name}, Email: ${email}`);
+        } else {
+            return new Response(`No user data found for "${name}"`, { status: 404 });
+        }
+    } catch (e) {
+        console.error(`Error getting user data: ${e}`);
+        return new Response("Error getting user data", { status: 500 });
     }
 }
 
