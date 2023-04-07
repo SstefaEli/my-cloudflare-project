@@ -6,7 +6,8 @@
     "start": "wrangler dev",
     "build": "tsc",
     "precompile": "tsc --build --clean",
-    "deploy": "wrangler publish"
+    "deploy": "wrangler publish",
+    "local": "wrangler dev --local"
   },
   "keywords": [],
   "author": "",

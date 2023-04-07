@@ -20,6 +20,7 @@ export async function handlePostRequest(request: Request): Promise<Response> {
 
 export async function handleGetRequest(request: Request): Promise<Response> {
     try {
+        console.log('hi')
         const url = new URL(request.url);
         const name = url.pathname.split("/")[2];
         const email = await MY_NAMESPACE.get(name);
